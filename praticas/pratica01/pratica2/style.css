@@ -1,0 +1,185 @@
+/*HEADER*/
+.bg-header-main {
+    background-color: #2C5699; /* Azul principal */
+}
+
+.bg-header-nav {
+    background-color: #D9E4FF; /* Azul claro do fundo do site */
+}
+
+.nav-categories-bar {
+    background-color: #2C5699; /* Azul da barra de categorias */
+    border: 1px solid #285482;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Ajustes dos ícones e logo */
+.icon-btn {
+    color: #000;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.icon-btn:hover {
+    color: #444;
+}
+
+.logo-img {
+    width: 100px; 
+    height: auto; 
+}
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2c3e50;
+    text-decoration: none;
+}
+
+/* Ajuste fino na barra de pesquisa */
+.search-input {
+    background-color: #d9e2ec;
+    border: none;
+}
+
+.search-input:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(59, 107, 165, 0.25);
+    outline: none; /* Remove a borda padrão de foco do navegador */
+}
+
+/*Menu*/
+
+/* Efeito suave ao passar o mouse sobre o card */
+.product-card {
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px); /* Levanta o card um pouquinho */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+/* Formatação do título do produto */
+.product-title {
+    font-size: 0.85rem;
+    color: #444;
+    line-height: 1.4;
+    /* Esse truque abaixo limita o texto a 3 linhas e coloca os "..." no final se for muito grande */
+    display: -webkit-box;
+    -webkit-line-clamp: 3; 
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Cores customizadas da sua loja (Laranja) */
+.text-orange {
+    color: #ff6b00;
+}
+
+.bg-orange {
+    background-color: #ff6b00;
+}
+
+/* Ícones de coração e sacola nos cards */
+.icon-action {
+    font-size: 1.3rem;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.icon-action:hover {
+    color: #ff6b00;
+}
+
+/*Footer*/
+
+/* Cor de fundo principal do rodapé */
+.footer-custom {
+    background-color: #2C5699; 
+}
+
+/* Estilo para os botões azuis (Cadastrar e Fale Conosco) */
+.btn-custom-blue {
+    background-color: #4361ee;
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom-blue:hover {
+    background-color: #3651c6; /* Fica levemente mais escuro ao passar o mouse */
+    color: white;
+}
+
+/* Links da coluna do meio (Sobre, Blog, etc.) */
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
+/* Ícones das Redes Sociais */
+.social-icons a {
+    color: white;
+    font-size: 1.25rem; /* Tamanho equivalente ao fs-5 do Bootstrap */
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Ícones dos Aplicativos */
+.app-icons a {
+    color: white;
+    font-size: 1.5rem; /* Tamanho equivalente ao fs-4 do Bootstrap */
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Efeito de "crescer" ao passar o mouse nos ícones */
+.social-icons a:hover,
+.app-icons a:hover {
+    transform: scale(1.15);
+    color: #e0e0e0;
+}
+
+/* Centralizar a logo do pássaro na sua coluna */
+.container-logo-centro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Espaçamento e alinhamento da lista de links */
+.container-links-rodape {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Adiciona um espaçamento (gap) entre cada link da lista */
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Define a distância exata entre os links */
+    margin: 0;
+}
+
+/* Em ecrãs maiores (desktop), ajustar o espaçamento lateral para os links não colarem na logo */
+@media (min-width: 992px) {
+    .container-links-rodape {
+        padding-left: 2rem;
+    }
+    .container-logo-centro {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+
+.footer-logo-bottom {
+    width: 150px;
+}
