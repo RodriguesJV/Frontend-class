@@ -66,7 +66,6 @@
     font-size: 0.85rem;
     color: #444;
     line-height: 1.4;
-    /* Esse truque abaixo limita o texto a 3 linhas e coloca os "..." no final se for muito grande */
     display: -webkit-box;
     -webkit-line-clamp: 3; 
     line-clamp: 3;
@@ -109,7 +108,7 @@
 }
 
 .btn-custom-blue:hover {
-    background-color: #3651c6; /* Fica levemente mais escuro ao passar o mouse */
+    background-color: #3651c6; 
     color: white;
 }
 
