@@ -1,10 +1,4 @@
-import { Heading } from "./Components/Heading"; 
-import "./style/theme.css";                
-import "./style/global.css";                 
+export function App() {
+  return <h1>Olá, Mundo!</h1>;
 
-
-export function App(){
-    return <Heading/>
-    
-    
 }
