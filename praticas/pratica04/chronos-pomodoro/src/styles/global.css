@@ -5,7 +5,7 @@
 }
 
 html {
-  font-size: 62.5%;
+   font-size: 62.5%;
 }
 
 body {
@@ -28,4 +28,20 @@ body {
 
 .container-fluid {
   width: 100%;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2.4rem;
 }

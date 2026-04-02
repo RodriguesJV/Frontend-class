@@ -1,4 +1,4 @@
-import { PlayCircleIcon } from 'lucide-react';
+import { PlayCircle } from 'lucide-react';
 import { Cycles } from '../Cycles';
 import { DefaultButton } from '../DefaultButton';
 import { DefaultInput } from '../DefaultInput';
@@ -24,7 +24,8 @@ export function MainForm() {
       </div>
 
       <div className='formRow'>
-        <DefaultButton icon={<PlayCircleIcon />} />
+        {/* Usando o componente correto aqui */}
+        <DefaultButton icon={<PlayCircle />} />
       </div>
     </form>
   );

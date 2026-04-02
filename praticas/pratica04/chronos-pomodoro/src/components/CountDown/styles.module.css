@@ -1,28 +1,6 @@
-.menu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.6rem;
-}
-
-.menuLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  background: var(--primary);
-  /* A cor do ícone recebe a cor feita para contrastar com o primary */
-  color: var(--text-over-primary);
-  transition: all 0.1s ease-in-out;
-  padding: 1.2rem;
-  border-radius: 0.8rem;
-}
-
-.menuLink:hover {
-  filter: brightness(80%);
-}
-
-.menuLink svg {
-  width: 2.4rem;
-  height: 2.4rem;
+.container {
+  font-size: clamp(8rem, 30vw, 16rem);
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.3;
 }
