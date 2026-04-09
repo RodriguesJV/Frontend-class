@@ -1,11 +1,33 @@
-import { PlayCircle } from 'lucide-react';
+import { PlayCircleIcon } from 'lucide-react';
 import { Cycles } from '../Cycles';
 import { DefaultButton } from '../DefaultButton';
 import { DefaultInput } from '../DefaultInput';
+import type { HomeProps } from '../../pages/Home';
 
-export function MainForm() {
+export function MainForm({ state, setState }: HomeProps) {
+  // Função de teste para alterar o estado global
+  function handleClick() {
+    setState(prevState => {
+      return {
+        ...prevState, // Copia o estado principal
+        config: {
+          ...prevState.config, // Copia o objeto 'config'
+          workTime: 34, // Altera apenas o workTime
+        },
+        formattedSecondsRemaining: '23:34', // Atualiza o cronômetro
+      };
+    });
+  }
+
   return (
     <form className='form' action=''>
+      <div>
+        {/* Botão de teste! type="button" evita que ele recarregue a página */}
+        <button type='button' onClick={handleClick}>
+          Testar Alteração de Estado
+        </button>
+      </div>
+
       <div className='formRow'>
         <DefaultInput
           labelText='task'
@@ -16,7 +38,8 @@ export function MainForm() {
       </div>
 
       <div className='formRow'>
-        <p>Lorem ipsum dolor sit amet.</p>
+        {/* Consumindo o estado global */}
+        <p>Próximo intervalo é de {state.config.workTime}min</p>
       </div>
 
       <div className='formRow'>
@@ -24,8 +47,7 @@ export function MainForm() {
       </div>
 
       <div className='formRow'>
-        {/* Usando o componente correto aqui */}
-        <DefaultButton icon={<PlayCircle />} />
+        <DefaultButton icon={<PlayCircleIcon />} />
       </div>
     </form>
   );
