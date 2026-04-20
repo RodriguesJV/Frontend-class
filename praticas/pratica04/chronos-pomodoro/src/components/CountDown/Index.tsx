@@ -1,10 +1,13 @@
-import type { HomeProps } from '../../pages/Home';
 import styles from './styles.module.css';
 
-// Usamos a tipagem exportada da Home
-export function CountDown({ state }: HomeProps) {
-  return (
-    {/* Exibe o tempo que está no estado global */}
-    <div className={styles.container}>{state.formattedSecondsRemaining}</div>
-  );
+// 1. Importamos apenas o nosso Hook!
+import { useTaskContext } from '../../contexts/TaskContext';
+
+export function CountDown() {
+  // 2. Chamamos o Hook
+  const taskContext = useTaskContext();
+
+  console.log(taskContext); // Teste no navegador!
+
+  return <div className={styles.container}>00:00</div>;
 }

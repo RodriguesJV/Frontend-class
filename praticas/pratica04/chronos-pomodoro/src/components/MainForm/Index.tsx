@@ -1,52 +1,67 @@
+import type { TaskModel } from '../../models/TaskModel';
+import { useRef } from 'react';
 import { PlayCircleIcon } from 'lucide-react';
 import { Cycles } from '../Cycles';
 import { DefaultButton } from '../DefaultButton';
 import { DefaultInput } from '../DefaultInput';
-import type { HomeProps } from '../../pages/Home';
+import { useTaskContext } from '../../contexts/useTaskContext';
 
-export function MainForm({ state, setState }: HomeProps) {
-  // Função de teste para alterar o estado global
-  function handleClick() {
-    setState(prevState => {
-      return {
-        ...prevState, // Copia o estado principal
-        config: {
-          ...prevState.config, // Copia o objeto 'config'
-          workTime: 34, // Altera apenas o workTime
-        },
-        formattedSecondsRemaining: '23:34', // Atualiza o cronômetro
-      };
-    });
-  }
+export function MainForm() {
+  const { setState } = useTaskContext();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleCreateNewTask(event: React.FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+
+  const inputValue = inputRef.current?.value ?? '';
+  if (!inputValue) return;
+
+  setState(prevState => {
+    const newTask: TaskModel = {
+      id: crypto.randomUUID(),
+      name: inputValue,
+      duration: prevState.config.workTime,
+      startDate: Date.now(),
+      completeDate: null,
+      interruptDate: null,
+      type: 'workTime',
+    };
+
+    return {
+      ...prevState,
+      config: { ...prevState.config },
+      activeTask: newTask,
+      currentCycle: 1,
+      secondsRemaining: prevState.config.workTime * 60,
+      formattedSecondsRemaining: '00:00',
+      tasks: [...prevState.tasks, newTask],
+    };
+  });
+
+  if (inputRef.current) inputRef.current.value = '';
+}
 
   return (
-    <form className='form' action=''>
-      <div>
-        {/* Botão de teste! type="button" evita que ele recarregue a página */}
-        <button type='button' onClick={handleClick}>
-          Testar Alteração de Estado
-        </button>
-      </div>
-
-      <div className='formRow'>
+    <form className="form" onSubmit={handleCreateNewTask}>
+      <div className="formRow">
         <DefaultInput
-          labelText='task'
-          id='meuInput'
-          type='text'
-          placeholder='Digite algo'
+          labelText="task"
+          id="meuInput"
+          type="text"
+          placeholder="Digite algo"
+          ref={inputRef}
         />
       </div>
 
-      <div className='formRow'>
-        {/* Consumindo o estado global */}
-        <p>Próximo intervalo é de {state.config.workTime}min</p>
+      <div className="formRow">
+        <p>Próximo intervalo é de 25min</p>
       </div>
 
-      <div className='formRow'>
+      <div className="formRow">
         <Cycles />
       </div>
 
-      <div className='formRow'>
+      <div className="formRow">
         <DefaultButton icon={<PlayCircleIcon />} />
       </div>
     </form>
