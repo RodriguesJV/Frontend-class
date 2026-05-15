@@ -9,47 +9,35 @@ import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 import { formatDate } from '../../utils/formatDate';
 import { getTaskStatus } from '../../utils/getTaskStatus';
 import { sortTasks, type SortTasksOptions } from '../../utils/sortTasks';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { TaskActionTypes } from '../../contexts/TaskContext/TaskActions';
 import { showMessage } from '../../adapters/showMessage';
 
 export function History() {
   const { state, dispatch } = useTaskContext();
-  const [confirmClearHistory, setConfirmClearHistory] = useState(false);
   const hasTasks = state.tasks.length > 0;
 
-  const [sortTasksOptions, setSortTaskOptions] = useState<SortTasksOptions>(
-    () => {
-      return {
-        tasks: sortTasks({ tasks: state.tasks }),
-        field: 'startDate',
-        direction: 'desc',
-      };
-    },
-  );
+  // 1. Guardamos apenas os critérios de ordenação no estado (sem duplicar a lista de tarefas)
+  const [sortOptions, setSortOptions] = useState<{
+    field: SortTasksOptions['field'];
+    direction: SortTasksOptions['direction'];
+  }>({
+    field: 'startDate',
+    direction: 'desc',
+  });
 
-  useEffect(() => {
-    setSortTaskOptions(prevState => ({
-      ...prevState,
-      tasks: sortTasks({
-        tasks: state.tasks,
-        direction: prevState.direction,
-        field: prevState.field,
-      }),
-    }));
-  }, [state.tasks]);
+  // 2. Zeramos os useEffects de sincronização de estado. O useMemo faz todo o trabalho sem violar o ESLint
+  const orderedTasks = useMemo(() => {
+    return sortTasks({
+      tasks: state.tasks,
+      field: sortOptions.field,
+      direction: sortOptions.direction,
+    });
+  }, [state.tasks, sortOptions.field, sortOptions.direction]);
 
   useEffect(() => {
     document.title = 'Histórico - Chronos Pomodoro';
   }, []);
-
-  useEffect(() => {
-    if (!confirmClearHistory) return;
-
-    setConfirmClearHistory(false);
-
-    dispatch({ type: TaskActionTypes.RESET_STATE });
-  }, [confirmClearHistory, dispatch]);
 
   useEffect(() => {
     return () => {
@@ -57,24 +45,21 @@ export function History() {
     };
   }, []);
 
+  // 3. Função simplificada para alternar a direção da ordenação
   function handleSortTasks({ field }: Pick<SortTasksOptions, 'field'>) {
-    const newDirection = sortTasksOptions.direction === 'desc' ? 'asc' : 'desc';
-
-    setSortTaskOptions({
-      tasks: sortTasks({
-        direction: newDirection,
-        tasks: sortTasksOptions.tasks,
-        field,
-      }),
-      direction: newDirection,
+    setSortOptions(prev => ({
       field,
-    });
+      direction: prev.field === field && prev.direction === 'desc' ? 'asc' : 'desc',
+    }));
   }
 
+  // 4. Reset direto na confirmação (sem usar useEffect intermediário)
   function handleResetHistory() {
     showMessage.dismiss();
     showMessage.confirm('Tem certeza?', confirmation => {
-      setConfirmClearHistory(confirmation);
+      if (confirmation) {
+        dispatch({ type: TaskActionTypes.RESET_STATE });
+      }
     });
   }
 
@@ -127,7 +112,8 @@ export function History() {
               </thead>
 
               <tbody>
-                {sortTasksOptions.tasks.map(task => {
+                {/* 5. Mapeamos a lista gerada dinamicamente pelo useMemo */}
+                {orderedTasks.map(task => {
                   const taskTypeDictionary = {
                     workTime: 'Foco',
                     shortBreakTime: 'Descanso curto',
@@ -139,7 +125,7 @@ export function History() {
                       <td>{task.duration}min</td>
                       <td>{formatDate(task.startDate)}</td>
                       <td>{getTaskStatus(task, state.activeTask)}</td>
-                      <td>{taskTypeDictionary[task.type]}</td>
+                      <td>{taskTypeDictionary[task.type as keyof typeof taskTypeDictionary] || task.type}</td>
                     </tr>
                   );
                 })}
