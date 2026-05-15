@@ -9,68 +9,62 @@ import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 import { formatDate } from '../../utils/formatDate';
 import { getTaskStatus } from '../../utils/getTaskStatus';
 import { sortTasks, type SortTasksOptions } from '../../utils/sortTasks';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react'; // Adicionado useMemo
 import { TaskActionTypes } from '../../contexts/TaskContext/TaskActions';
 import { showMessage } from '../../adapters/showMessage';
+import { toast } from 'react-toastify';
 
 export function History() {
   const { state, dispatch } = useTaskContext();
-  const [confirmClearHistory, setConfirmClearHistory] = useState(false);
   const hasTasks = state.tasks.length > 0;
 
-  const [sortTasksOptions, setSortTaskOptions] = useState<SortTasksOptions>(
-    () => {
-      return {
-        tasks: sortTasks({ tasks: state.tasks }),
-        field: 'startDate',
-        direction: 'desc',
-      };
-    },
-  );
+  // 1. Guardamos apenas os critérios de ordenação no estado
+  const [sortConfig, setSortConfig] = useState<{
+    field: keyof SortTasksOptions['tasks'][0];
+    direction: 'asc' | 'desc';
+  }>({
+    field: 'startDate',
+    direction: 'desc',
+  });
 
+  // 2. O useMemo recalcula a lista ordenada sempre que as tarefas ou a configuração mudarem
+  // Isso elimina a necessidade de um useEffect com setState (que causava o erro)
+  const sortedTasks = useMemo(() => {
+    return sortTasks({
+      tasks: state.tasks,
+      field: sortConfig.field,
+      direction: sortConfig.direction,
+    });
+  }, [state.tasks, sortConfig]);
+
+  // Efeito para o título da página
   useEffect(() => {
-    setSortTaskOptions(prevState => ({
-      ...prevState,
-      tasks: sortTasks({
-        tasks: state.tasks,
-        direction: prevState.direction,
-        field: prevState.field,
-      }),
-    }));
-  }, [state.tasks]);
+    document.title = 'Histórico - Chronos Pomodoro';
+  }, []);
 
-  useEffect(() => {
-    if (!confirmClearHistory) return;
-
-    setConfirmClearHistory(false);
-
-    dispatch({ type: TaskActionTypes.RESET_STATE });
-  }, [confirmClearHistory, dispatch]);
-
+  // Limpa mensagens ao desmontar o componente
   useEffect(() => {
     return () => {
       showMessage.dismiss();
     };
   }, []);
 
-  function handleSortTasks({ field }: Pick<SortTasksOptions, 'field'>) {
-    const newDirection = sortTasksOptions.direction === 'desc' ? 'asc' : 'desc';
-
-    setSortTaskOptions({
-      tasks: sortTasks({
-        direction: newDirection,
-        tasks: sortTasksOptions.tasks,
-        field,
-      }),
-      direction: newDirection,
+  // 3. Função de ordenação simplificada
+  function handleSortTasks({ field }: { field:  }) {
+    setSortConfig(prev => ({
       field,
-    });
+      direction: prev.field === field && prev.direction === 'desc' ? 'asc' : 'desc',
+    }));
   }
 
+  // 4. Função de Reset corrigida (sem precisar de useEffect extra)
   function handleResetHistory() {
     showMessage.dismiss();
-    showMessage.confirm('Tem certeza?', confirmation => {
-      setConfirmClearHistory(confirmation);
+    showMessage.confirm('Tem certeza que deseja apagar todo o histórico?', confirmation => {
+      if (confirmation) {
+        dispatch({ type: TaskActionTypes.RESET_STATE });
+        toast.success("Histórico limpo com sucesso!");
+      }
     });
   }
 
@@ -123,7 +117,8 @@ export function History() {
               </thead>
 
               <tbody>
-                {sortTasksOptions.tasks.map(task => {
+                {/* Agora usamos sortedTasks diretamente aqui */}
+                {sortedTasks.map(task => {
                   const taskTypeDictionary = {
                     workTime: 'Foco',
                     shortBreakTime: 'Descanso curto',
