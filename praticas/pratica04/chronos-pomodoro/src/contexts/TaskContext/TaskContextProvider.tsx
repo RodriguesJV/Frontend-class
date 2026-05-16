@@ -31,6 +31,7 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
 
   const worker = TimerWorkerManager.getInstance();
 
+  // 1. Escuta as mensagens que vêm do Worker (diminuindo o tempo)
   useEffect(() => {
     worker.onmessage(e => {
       const countDownSeconds = e.data;
@@ -53,22 +54,32 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
     });
   }, [worker]);
 
+  // 2. CORREÇÃO AQUI: Controla as ações do Worker (Iniciar / Parar)
+  // Só vai rodar quando você clicar para começar ou parar uma tarefa.
   useEffect(() => {
-    localStorage.setItem('state', JSON.stringify(state));
-
     if (!state.activeTask) {
       worker.terminate();
+    } else {
+      // Passa apenas as informações necessárias para o Worker começar a contagem
+      worker.postMessage({
+        activeTask: state.activeTask,
+        secondsRemaining: state.secondsRemaining,
+      });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [worker, state.activeTask]); // Removemos o 'state' inteiro daqui
 
+  // 3. Cuida apenas da parte visual e salvamento no LocalStorage
+  useEffect(() => {
+    localStorage.setItem('state', JSON.stringify(state));
     document.title = `${state.formattedSecondsRemaining} - Chronos Pomodoro`;
+  }, [state]);
 
-    worker.postMessage(state);
-  }, [worker, state]);
-
+  // 4. Gerencia o som do Beep
   useEffect(() => {
     if (state.activeTask && playBeepRef.current === null) {
       playBeepRef.current = loadBeep();
-    } else {
+    } else if (!state.activeTask) {
       playBeepRef.current = null;
     }
   }, [state.activeTask]);
