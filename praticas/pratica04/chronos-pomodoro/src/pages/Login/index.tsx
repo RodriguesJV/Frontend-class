@@ -1,10 +1,9 @@
-// pages/Login/index.tsx
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { DefaultInput } from '../../components/DefaultInput';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { showMessage } from '../../adapters/showMessage';
-// import styles from './styles.module.css';
+import styles from './styles.module.css';
 
 export function Login() {
   const navigate = useNavigate();
@@ -34,32 +33,50 @@ export function Login() {
   }
 
   return (
-    <form onSubmit={handleSubmit} /* className={styles.form} */>
-      <DefaultInput
-        id="login-user"
-        labelText="Usuário"
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
+    <div className={styles.screenContainer}>
+      <form onSubmit={handleSubmit} className={styles.loginCard}>
+        <h2 className={styles.title}>Chronos Pomodoro</h2>
 
-      <DefaultInput
-        id="login-pass"
-        labelText="Senha"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <div className={styles.inputsWrapper}>
+          <DefaultInput
+            id="login-user"
+            labelText="Usuário"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
 
-      <button type="submit">Entrar</button>
+          <DefaultInput
+            id="login-pass"
+            labelText="Senha"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
-      <button type="button" onClick={() => showMessage.info('Cadastro em breve')}>
-        Cadastrar
-      </button>
+        <button type="submit" className={styles.buttonSubmit}>
+          Entrar
+        </button>
 
-      <button type="button" onClick={() => showMessage.info('Recuperação em breve')}>
-        Esqueci minha senha
-      </button>
-    </form>
+        <div className={styles.actionsContainer}>
+          <button 
+            type="button" 
+            className={styles.linkButton}
+            onClick={() => showMessage.info('Fluxo de cadastro ainda será implementado')}
+          >
+            Cadastrar
+          </button>
+          
+          <button 
+            type="button" 
+            className={styles.linkButton}
+            onClick={() => showMessage.info('Fluxo de recuperação de senha ainda será implementado')}
+          >
+            Esqueci minha senha
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
