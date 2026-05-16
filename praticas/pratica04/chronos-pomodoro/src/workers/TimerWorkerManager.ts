@@ -15,7 +15,8 @@ export class TimerWorkerManager {
     return instance;
   }
 
-  postMessage(message: any) {
+  // Mudamos de 'any' para 'unknown' para satisfazer o TypeScript
+  postMessage(message: unknown) {
     this.worker.postMessage(message);
   }
 
