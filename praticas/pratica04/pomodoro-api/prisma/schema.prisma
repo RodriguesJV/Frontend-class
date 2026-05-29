@@ -10,6 +10,20 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  title     String
+  status    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  id            Int @id @default(autoincrement())
+  focusTime     Int @default(25)
+  shortBreak    Int @default(5)
+  longBreak     Int @default(15)
 }
