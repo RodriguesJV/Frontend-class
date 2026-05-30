@@ -1,3 +1,6 @@
-import { PrismaClient } from '../generated/prisma/client.js'
+import { PrismaClient } from '@prisma/client';
 
-export const prisma = new PrismaClient()
+// No Prisma 7, passamos a url ou o adapter aqui se o config automático falhar
+export const prisma = new PrismaClient({
+  datasourceUrl: process.env.DATABASE_URL,
+});

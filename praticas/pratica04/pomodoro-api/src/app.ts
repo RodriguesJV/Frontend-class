@@ -1,23 +1,16 @@
-import express from 'express'
-import { prisma } from './lib/prisma.js'
+import express from 'express';
+import cors from 'cors';
+import { settingsRouter } from './routes/settings.routes';
+import { tasksRouter } from './routes/tasks.routes';
 
-const app = express()
-app.use(express.json())
+export const app = express();
 
-// Rota GET /health
-app.get('/health', (req, res) => {
-  return res.json({ status: 'ok' })
-})
+app.use(cors());
+app.use(express.json());
 
-// Rota GET /settings
-app.get('/settings', async (req, res) => {
-  const settings = await prisma.settings.findFirst()
-  
-  if (!settings) {
-    return res.json({ focusTime: 25, shortBreak: 5, longBreak: 15 })
-  }
-  
-  return res.json(settings)
-})
+app.use('/settings', settingsRouter);
+app.use('/tasks', tasksRouter);
 
-export { app }
+app.get('/health', (_req, res) => {
+  res.json({ ok: true });
+});
