@@ -22,10 +22,8 @@ settingsRouter.put('/', async (req, res) => {
     longBreakTime: number;
   };
 
-  // O código continua... provavelemente com um prisma.settings.update
-});
-
-if (
+  // Validações dos valores recebidos
+  if (
     !Number.isInteger(workTime) ||
     !Number.isInteger(shortBreakTime) ||
     !Number.isInteger(longBreakTime)
