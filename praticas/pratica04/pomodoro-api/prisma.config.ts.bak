@@ -1,0 +1,21 @@
+import 'dotenv/config';
+
+
+export default defineConfig({
+  schema: 'prisma/schema.prisma',
+  migrations: {
+    path: 'prisma/migrations',
+  },
+  engine: 'classic',
+  datasource: {
+    url: env('DATABASE_URL'),
+  },
+});
+
+function defineConfig(arg0: { schema: string; migrations: { path: string; }; engine: string; datasource: { url: any; }; }) {
+  throw new Error('Function not implemented.');
+}
+function env(arg0: string): any {
+  throw new Error('Function not implemented.');
+}
+

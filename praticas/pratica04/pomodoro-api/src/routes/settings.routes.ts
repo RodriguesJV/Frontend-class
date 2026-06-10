@@ -22,15 +22,6 @@ settingsRouter.put('/', async (req, res) => {
     longBreakTime: number;
   };
 
-  // Validações dos valores recebidos
-  if (
-    !Number.isInteger(workTime) ||
-    !Number.isInteger(shortBreakTime) ||
-    !Number.isInteger(longBreakTime)
-  ) {
-    return res.status(400).json({ message: 'Valores inválidos' });
-  }
-
   const settings = await prisma.settings.upsert({
     where: { id: 1 },
     update: { workTime, shortBreakTime, longBreakTime },
@@ -38,4 +29,4 @@ settingsRouter.put('/', async (req, res) => {
   });
 
   return res.json(settings);
-});
+}); 
