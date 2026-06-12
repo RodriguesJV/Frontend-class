@@ -1,0 +1,81 @@
+.screenContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(2, 9, 31);; 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.loginCard {
+  background-color: rgb(19, 39, 105);; 
+  padding: 2.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-family: sans-serif;
+}
+
+.inputsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+/* Customização para o botão principal */
+.buttonSubmit {
+  background-color: rgb(34, 75, 209);; 
+  color: #ffffff;
+  border: none;
+  padding: 1.0rem;
+  border-radius: 6px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.buttonSubmit:hover {
+  background-color: #00b37e;
+}
+
+/* Container para alinhar os links utilitários embaixo */
+.actionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+/* Transforma os botões secundários em links minimalistas */
+.linkButton {
+  background: none;
+  border: none;
+  color: #8d99ae;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0;
+  text-decoration: none;
+}
+
+.linkButton:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
