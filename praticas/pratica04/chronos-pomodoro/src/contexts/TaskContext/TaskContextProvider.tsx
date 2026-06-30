@@ -6,7 +6,8 @@ import { TimerWorkerManager } from '../../workers/TimerWorkerManager';
 import { TaskActionTypes } from './TaskActions';
 import { loadBeep } from '../../utils/loadBeep';
 import type { TaskStateModel } from '../../models/TaskStateModel';
-import { settingsService } from '../../services/settingsService'; // 👈 novo
+import { settingsService } from '../../services/settingsService';
+import { tasksService } from '../../services/tasksService'; // 👈 novo
 
 type TaskContextProviderProps = {
   children: React.ReactNode;
@@ -25,7 +26,10 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
     };
   });
 
-  // 👇 Carrega settings da API no startup
+  const playBeepRef = useRef<ReturnType<typeof loadBeep> | null>(null);
+  const worker = TimerWorkerManager.getInstance();
+
+  // Carrega settings da API no startup
   useEffect(() => {
     settingsService.get().then(settings => {
       dispatch({
@@ -41,9 +45,7 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
     });
   }, []);
 
-  const playBeepRef = useRef<ReturnType<typeof loadBeep> | null>(null);
-  const worker = TimerWorkerManager.getInstance();
-
+  // Escuta as mensagens do Worker
   useEffect(() => {
     worker.onmessage(e => {
       const countDownSeconds = e.data;
@@ -51,6 +53,10 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
         if (playBeepRef.current) {
           playBeepRef.current();
           playBeepRef.current = null;
+        }
+        // Completa a task na API
+        if (state.activeTask) {
+          tasksService.complete(state.activeTask.id).catch(console.error);
         }
         dispatch({ type: TaskActionTypes.COMPLETE_TASK });
         worker.terminate();
@@ -61,12 +67,22 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
         });
       }
     });
-  }, [worker]);
+  }, [worker, state.activeTask]);
 
+  // Controla Worker + cria/interrompe task na API
   useEffect(() => {
     if (!state.activeTask) {
       worker.terminate();
     } else {
+      // Cria a task na API quando inicia
+      tasksService.create({
+        id: state.activeTask.id,
+        name: state.activeTask.name,
+        duration: state.activeTask.duration,
+        type: state.activeTask.type,
+        startDate: state.activeTask.startDate,
+      }).catch(console.error);
+
       worker.postMessage({
         activeTask: state.activeTask,
         secondsRemaining: state.secondsRemaining,
@@ -75,11 +91,13 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worker, state.activeTask]);
 
+  // Salva no localStorage e atualiza title
   useEffect(() => {
     localStorage.setItem('state', JSON.stringify(state));
     document.title = `${state.formattedSecondsRemaining} - Chronos Pomodoro`;
   }, [state]);
 
+  // Gerencia som do Beep
   useEffect(() => {
     if (state.activeTask && playBeepRef.current === null) {
       playBeepRef.current = loadBeep();

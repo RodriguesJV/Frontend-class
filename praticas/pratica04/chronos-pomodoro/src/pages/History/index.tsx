@@ -12,12 +12,13 @@ import { sortTasks, type SortTasksOptions } from '../../utils/sortTasks';
 import { useEffect, useState, useMemo } from 'react';
 import { TaskActionTypes } from '../../contexts/TaskContext/TaskActions';
 import { showMessage } from '../../adapters/showMessage';
+import { tasksService } from '../../services/tasksService';
 
 export function History() {
   const { state, dispatch } = useTaskContext();
   const hasTasks = state.tasks.length > 0;
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
-  // 1. Guardamos apenas os critérios de ordenação no estado (sem duplicar a lista de tarefas)
   const [sortOptions, setSortOptions] = useState<{
     field: SortTasksOptions['field'];
     direction: SortTasksOptions['direction'];
@@ -26,7 +27,6 @@ export function History() {
     direction: 'desc',
   });
 
-  // 2. Zeramos os useEffects de sincronização de estado. O useMemo faz todo o trabalho sem violar o ESLint
   const orderedTasks = useMemo(() => {
     return sortTasks({
       tasks: state.tasks,
@@ -45,7 +45,19 @@ export function History() {
     };
   }, []);
 
-  // 3. Função simplificada para alternar a direção da ordenação
+  useEffect(() => {
+    tasksService.getAll()
+      .then(tasks => {
+        dispatch({ type: TaskActionTypes.SET_TASKS, payload: tasks });
+      })
+      .catch(() => {
+        showMessage.error('Erro ao carregar histórico');
+      })
+      .finally(() => {
+        setIsLoadingHistory(false);
+      });
+  }, [dispatch]);
+
   function handleSortTasks({ field }: Pick<SortTasksOptions, 'field'>) {
     setSortOptions(prev => ({
       field,
@@ -53,12 +65,16 @@ export function History() {
     }));
   }
 
-  // 4. Reset direto na confirmação (sem usar useEffect intermediário)
-  function handleResetHistory() {
+  async function handleResetHistory() {
     showMessage.dismiss();
-    showMessage.confirm('Tem certeza?', confirmation => {
+    showMessage.confirm('Tem certeza?', async confirmation => {
       if (confirmation) {
-        dispatch({ type: TaskActionTypes.RESET_STATE });
+        try {
+          await tasksService.deleteAll();
+          dispatch({ type: TaskActionTypes.RESET_STATE });
+        } catch {
+          showMessage.error('Erro ao apagar histórico');
+        }
       }
     });
   }
@@ -83,36 +99,35 @@ export function History() {
       </Container>
 
       <Container>
-        {hasTasks && (
+        {isLoadingHistory && (
+          <p style={{ textAlign: 'center' }}>Carregando histórico...</p>
+        )}
+
+        {!isLoadingHistory && !hasTasks && (
+          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
+            Ainda não existem tarefas criadas.
+          </p>
+        )}
+
+        {!isLoadingHistory && hasTasks && (
           <div className={styles.responsiveTable}>
             <table>
               <thead>
                 <tr>
-                  <th
-                    onClick={() => handleSortTasks({ field: 'name' })}
-                    className={styles.thSort}
-                  >
+                  <th onClick={() => handleSortTasks({ field: 'name' })} className={styles.thSort}>
                     Tarefa ↕
                   </th>
-                  <th
-                    onClick={() => handleSortTasks({ field: 'duration' })}
-                    className={styles.thSort}
-                  >
+                  <th onClick={() => handleSortTasks({ field: 'duration' })} className={styles.thSort}>
                     Duração ↕
                   </th>
-                  <th
-                    onClick={() => handleSortTasks({ field: 'startDate' })}
-                    className={styles.thSort}
-                  >
+                  <th onClick={() => handleSortTasks({ field: 'startDate' })} className={styles.thSort}>
                     Data ↕
                   </th>
                   <th>Status</th>
                   <th>Tipo</th>
                 </tr>
               </thead>
-
               <tbody>
-                {/* 5. Mapeamos a lista gerada dinamicamente pelo useMemo */}
                 {orderedTasks.map(task => {
                   const taskTypeDictionary = {
                     workTime: 'Foco',
@@ -132,11 +147,6 @@ export function History() {
               </tbody>
             </table>
           </div>
-        )}
-        {!hasTasks && (
-          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
-            Ainda não existem tarefas criadas.
-          </p>
         )}
       </Container>
     </MainTemplate>

@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    // Saída
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // Módulos — CommonJS é o padrão do Node/Express
+    "module": "CommonJS",
+    "moduleResolution": "bundler",
+    "target": "ES2020",
+    "lib": ["ES2020"],
+
+    // Tipos Node.js
+    "types": ["node"],
+
+    // Outros outputs
+    "sourceMap": true,
+    "declaration": true,
+
+    // Checagem estrita
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
